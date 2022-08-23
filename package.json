@@ -1,0 +1,29 @@
+{
+	"name": "l.og.ax",
+	"description": "https://l.og.ax",
+	"version": "0.0.0",
+	"main": "lib/index.js",
+	"bin": {
+		"l.og.ax": "lib/cli.js"
+	},
+	"scripts": {
+		"start": "node lib/cli"
+	},
+	"author": "Prokop Schield",
+	"devDependencies": {
+		"@types/node": ">=16",
+		"@types/node-fetch": "^2.5.3"
+	},
+	"keywords": [],
+	"license": "GPL-3.0-or-later",
+	"dependencies": {
+		"node-fetch": "^2.6.7",
+		"nodesite.eu-local": "^1.2.4",
+		"nsblob": "^0.2.13",
+		"ps-std": "^0.1.6"
+	},
+	"types": "./lib/index.d.ts",
+	"directories": {
+		"lib": "lib"
+	}
+}
