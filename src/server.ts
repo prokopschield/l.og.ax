@@ -47,6 +47,7 @@ export const init = async () => {
 				head: {
 					'Access-Control-Allow-Origin': '*',
 					'Access-Control-Allow-Methods': '*',
+					'Content-Type': 'text/plain',
 				},
 				body: await shorten(url.href),
 			};
