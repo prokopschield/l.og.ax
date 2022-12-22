@@ -51,7 +51,11 @@ export const addRow = (short_link: string, long_link: string) => {
 		const table = await table_promise;
 		const [{ serial_number }] = await table.find({}, '| wc -l');
 
-		await table.insert({ serial_number, short_link, long_link });
+		await table.insert({
+			serial_number: serial_number + 1,
+			short_link,
+			long_link,
+		});
 
 		return query('short_link')(short_link);
 	});
