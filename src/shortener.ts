@@ -6,10 +6,10 @@ import { addRow, query } from './db';
 const queue = new Queue(console.error);
 
 export const shorten = cacheFn(async (url: string) => {
-	const link = query(2)(url);
+	const link = await query('long_link')(url);
 
 	if (link) {
-		return new URL(link[1], `https://${domain}`).href;
+		return new URL(link.short_link, `https://${domain}`).href;
 	}
 
 	await queue.promise;

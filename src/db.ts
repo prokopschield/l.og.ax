@@ -1,10 +1,9 @@
 import fs from 'fs';
 import nsblob from 'nsblob';
+import { Database, descriptors } from 'nscdn-csvdb';
 import { cacheFn, SerialQueue } from 'ps-std';
 
-import { dbfile } from './constants';
-
-const db = Array<string[]>();
+import { new_db_dir, new_db_name } from './constants';
 
 export const fetchStr = (hash: string) => {
 	if (hash.length === 64) {
@@ -18,64 +17,42 @@ export const fetchStr = (hash: string) => {
 	}
 };
 
-export const storeStr = async (str: string) => {
-	const hash = str.match(/^[a-f0-9]{64}$/) ? str : await nsblob.store(str);
-
-	return Buffer.from(hash, 'hex').toString('base64').slice(0, -1);
+const schema = {
+	serial_number: descriptors.JsNumberType,
+	short_link: descriptors.JsStringType,
+	long_link: {
+		deserializer: (value: Buffer) => fetchStr(String(value)),
+		serializer: descriptors.JsStringType.serializer,
+	},
 };
 
-export const ready = (async () => {
-	const dbblob = await fs.promises.readFile(dbfile, 'utf-8').catch((e) => '');
+const database = new Database(new_db_dir);
+const table_promise = database.getTable(new_db_name, schema);
 
-	await Promise.all(
-		dbblob
-			.split(/\n+/g)
-			.filter((a) => a)
-			.map(async (line) => {
-				db.push(
-					await Promise.all(
-						line
-							.split(/\,/g)
-							.map((value) =>
-								value.length <= 40 ? value : fetchStr(value)
-							)
-					)
-				);
-			})
-	);
-})();
+export const ready = table_promise.then(() => {});
 
-export const query = cacheFn((index: number) =>
-	cacheFn((value: string) => {
-		for (const line of db) {
-			if (line[index] === value) {
-				return [...line];
+export const query = cacheFn(
+	(index: keyof typeof schema) => async (value: string) => {
+		const table = await table_promise;
+		const results = await table.find({ [index]: value });
+
+		for (const result of results) {
+			if (result[index] === value) {
+				return result;
 			}
 		}
-	})
+	}
 );
-
-const dbWriter = fs.createWriteStream(dbfile, {
-	flags: 'a',
-});
 
 export const serializer = new SerialQueue(console.error);
 
-export const addRow = (...row: string[]) => {
-	const values_p = Promise.all(
-		row.map((line) =>
-			line.match(/^[a-z0-9]{0,40}$/gi) ? line : storeStr(line)
-		)
-	);
-
+export const addRow = (short_link: string, long_link: string) => {
 	return serializer.add(async () => {
-		await ready;
-		const id = String(db.length + 1);
-		const values = await values_p;
+		const table = await table_promise;
+		const [{ serial_number }] = await table.find({}, '| wc -l');
 
-		dbWriter.write([id, ...values].join(',') + '\n');
-		db.push([id, ...row]);
+		await table.insert({ serial_number, short_link, long_link });
 
-		return query(0)(id);
+		return query('short_link')(short_link);
 	});
 };

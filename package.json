@@ -20,6 +20,7 @@
 		"node-fetch": "^2.6.7",
 		"nodesite.eu-local": "^1.2.4",
 		"nsblob": "^0.2.13",
+		"nscdn-csvdb": "0.1.0-14",
 		"ps-std": "^0.1.6"
 	},
 	"types": "./lib/index.d.ts",

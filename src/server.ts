@@ -23,15 +23,18 @@ export const init = async () => {
 
 			let key = pathname.slice(1).toLowerCase();
 
-			const link = query(1)(key);
+			const link = await query('short_link')(key);
 
 			if (link) {
-				const [_id, _key, remote] = link;
+				const { long_link } = link;
 
 				return {
 					statusCode: 302,
 					head: {
-						Location: remote,
+						'Access-Control-Allow-Origin': '*',
+						'Access-Control-Allow-Methods': '*',
+						'Access-Control-Allow-Headers': '*',
+						Location: long_link,
 					},
 				};
 			}
@@ -47,6 +50,7 @@ export const init = async () => {
 				head: {
 					'Access-Control-Allow-Origin': '*',
 					'Access-Control-Allow-Methods': '*',
+					'Access-Control-Allow-Headers': '*',
 					'Content-Type': 'text/plain',
 				},
 				body: await shorten(url.href),
