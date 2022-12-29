@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>LOGAX - Link Short with style</title>
+        <style>
+            body {
+                --nc-tx-1: #ffffff;
+                --nc-tx-2: #eeeeee;
+                --nc-bg-1: #000000;
+                --nc-bg-2: #111111;
+                --nc-bg-3: #222222;
+                --nc-lk-1: #3291ff;
+                --nc-lk-2: #0070f3;
+                --nc-lk-tx: #ffffff;
+                --nc-ac-1: #7928ca;
+                --nc-ac-tx: #ffffff;
+            }
+        </style>
+        <link rel="stylesheet" href="https://v2cdn.nodesite.eu/new@1.1.2.css" />
+    </head>
+    <body>
+        {{ERROR}}
+        <h1>Welcome to Logax - The Free Link Shorterner</h1>
+        <p>
+            Just type in the url you want to short and then, boom! You'll have a
+            short link made just for you!
+        </p>
+        <form action="new.php" method="get">
+            <input
+                name="url"
+                type="text"
+                required="required"
+                placeholder="https://jontes.page"
+            /><br />
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>
+
+
