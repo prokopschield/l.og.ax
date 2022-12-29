@@ -17,6 +17,7 @@
 	"keywords": [],
 	"license": "GPL-3.0-or-later",
 	"dependencies": {
+		"isomorphic-dompurify": "^0.24.0",
 		"node-fetch": "^2.6.7",
 		"nodesite.eu-local": "^1.2.4",
 		"nsblob": "^0.2.13",
