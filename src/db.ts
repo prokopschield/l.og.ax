@@ -6,9 +6,9 @@ import { cacheFn, SerialQueue } from 'ps-std';
 import { new_db_dir, new_db_name } from './constants';
 
 export const fetchStr = (hash: string) => {
-	if (hash.length === 64) {
+	if (/^[a-f0-9]{64}$/gi.test(hash)) {
 		return nsblob.fetch(hash).then(String);
-	} else if (hash.length === 43 || hash.length === 44) {
+	} else if (/^[a-z0-9\+\/]{43}[\=]?$/gi.test(hash)) {
 		return nsblob
 			.fetch(Buffer.from(hash, 'base64').toString('hex'))
 			.then(String);
