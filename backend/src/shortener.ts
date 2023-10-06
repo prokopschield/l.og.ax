@@ -1,13 +1,13 @@
-import { cacheFn, Queue } from 'ps-std';
+import { cacheFn, Queue } from "ps-std";
 
-import { domain } from './constants';
-import { addRow, query } from './db';
-import { generateKey } from './keygen';
+import { domain } from "./constants";
+import { addRow, query } from "./db";
+import { generateKey } from "./keygen";
 
 const queue = new Queue(console.error);
 
 export const shorten = cacheFn(async (url: string) => {
-	const link = await query('long_link')(url);
+	const link = await query("long_link")(url);
 
 	if (link) {
 		return new URL(link.short_link, `https://${domain}`).href;

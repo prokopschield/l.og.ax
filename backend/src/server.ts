@@ -1,14 +1,14 @@
-import { listen } from 'nodesite.eu-local';
+import { listen } from "nodesite.eu-local";
 
-import { domain, port } from './constants';
-import { query, ready } from './db';
-import { modifyIndex, noErrorIndex } from './helpers';
-import { shorten } from './shortener';
+import { domain, port } from "./constants";
+import { query, ready } from "./db";
+import { modifyIndex, noErrorIndex } from "./helpers";
+import { shorten } from "./shortener";
 
 export const init = async () => {
 	const { create } = listen({
-		name: domain.replace(/\.+/g, ''),
-		interface: 'http',
+		name: domain.replace(/\.+/g, ""),
+		interface: "http",
 		port,
 	});
 
@@ -16,26 +16,26 @@ export const init = async () => {
 
 	const ROOT_URL = new URL(`https://${domain}`);
 
-	create('/', async (request) => {
+	create("/", async (request) => {
 		try {
 			const fixed_url = request.uri
-				.replace(/(https?)\:\/+([^\/])/, '$1://$2')
+				.replace(/(https?)\:\/+([^\/])/, "$1://$2")
 				.slice(1);
 
 			const { pathname } = new URL(request.uri, ROOT_URL);
 
-			if (pathname === '/') {
+			if (pathname === "/") {
 				return {
 					statusCode: 302,
 					head: {
-						Location: '/homepage/',
+						Location: "/homepage/",
 					},
 				};
 			}
 
 			let key = pathname.slice(1).toLowerCase();
 
-			const link = await query('short_link')(key);
+			const link = await query("short_link")(key);
 
 			if (link) {
 				const { long_link } = link;
@@ -43,9 +43,9 @@ export const init = async () => {
 				return {
 					statusCode: 302,
 					head: {
-						'Access-Control-Allow-Origin': '*',
-						'Access-Control-Allow-Methods': '*',
-						'Access-Control-Allow-Headers': '*',
+						"Access-Control-Allow-Origin": "*",
+						"Access-Control-Allow-Methods": "*",
+						"Access-Control-Allow-Headers": "*",
 						Location: long_link,
 					},
 				};
@@ -60,10 +60,10 @@ export const init = async () => {
 			return {
 				statusCode: 200,
 				head: {
-					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Methods': '*',
-					'Access-Control-Allow-Headers': '*',
-					'Content-Type': 'text/plain',
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Methods": "*",
+					"Access-Control-Allow-Headers": "*",
+					"Content-Type": "text/plain",
 				},
 				body: await shorten(url.href),
 			};
@@ -75,33 +75,33 @@ export const init = async () => {
 		}
 	});
 
-	create('/homepage', async (request) => {
+	create("/homepage", async (request) => {
 		const { searchParams } = new URL(request.uri, ROOT_URL);
 
-		const error = searchParams.get('error') || '';
+		const error = searchParams.get("error") || "";
 
 		const html = Buffer.from(error ? modifyIndex(error) : noErrorIndex);
 
 		return {
 			statusCode: 200,
 			head: {
-				'Access-Control-Allow-Origin': '*',
-				'Access-Control-Allow-Methods': '*',
-				'Access-Control-Allow-Headers': '*',
-				'Content-Type': 'text/html',
-				'Content-Length': String(html.length),
+				"Access-Control-Allow-Origin": "*",
+				"Access-Control-Allow-Methods": "*",
+				"Access-Control-Allow-Headers": "*",
+				"Content-Type": "text/html",
+				"Content-Length": String(html.length),
 			},
 			body: html,
 		};
 	});
 
-	create('/new.php', async (request) => {
-		let url = '';
+	create("/new.php", async (request) => {
+		let url = "";
 
 		try {
 			const { searchParams } = new URL(request.uri, ROOT_URL);
 
-			const url_object = new URL(searchParams.get('url') || '');
+			const url_object = new URL(searchParams.get("url") || "");
 
 			url = url_object.href;
 
@@ -112,18 +112,18 @@ export const init = async () => {
 			return {
 				statusCode: 200,
 				head: {
-					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Methods': '*',
-					'Access-Control-Allow-Headers': '*',
-					'Content-Type': 'text/plain',
+					"Access-Control-Allow-Origin": "*",
+					"Access-Control-Allow-Methods": "*",
+					"Access-Control-Allow-Headers": "*",
+					"Content-Type": "text/plain",
 				},
 				body: url,
 			};
 		} catch (error) {
-			const redirect_url = new URL('/homepage/error', ROOT_URL);
+			const redirect_url = new URL("/homepage/error", ROOT_URL);
 
-			redirect_url.searchParams.set('error', String(error));
-			redirect_url.searchParams.set('url', url);
+			redirect_url.searchParams.set("error", String(error));
+			redirect_url.searchParams.set("url", url);
 
 			return {
 				statusCode: 302,

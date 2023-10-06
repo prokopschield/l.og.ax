@@ -1,16 +1,16 @@
-import fs from 'fs';
-import nsblob from 'nsblob';
-import { Database, descriptors } from 'nscdn-csvdb';
-import { cacheFn, SerialQueue } from 'ps-std';
+import fs from "fs";
+import nsblob from "nsblob";
+import { Database, descriptors } from "nscdn-csvdb";
+import { cacheFn, SerialQueue } from "ps-std";
 
-import { new_db_dir, new_db_name } from './constants';
+import { new_db_dir, new_db_name } from "./constants";
 
 export const fetchStr = (hash: string) => {
 	if (/^[a-f0-9]{64}$/gi.test(hash)) {
 		return nsblob.fetch(hash).then(String);
 	} else if (/^[a-z0-9\+\/]{43}[\=]?$/gi.test(hash)) {
 		return nsblob
-			.fetch(Buffer.from(hash, 'base64').toString('hex'))
+			.fetch(Buffer.from(hash, "base64").toString("hex"))
 			.then(String);
 	} else {
 		return Promise.resolve(hash);
@@ -49,7 +49,7 @@ export const serializer = new SerialQueue(console.error);
 export const addRow = (short_link: string, long_link: string) => {
 	return serializer.add(async () => {
 		const table = await table_promise;
-		const [{ serial_number }] = await table.find({}, '| wc -l');
+		const [{ serial_number }] = await table.find({}, "| wc -l");
 
 		await table.insert({
 			serial_number: serial_number + 1,
@@ -57,6 +57,6 @@ export const addRow = (short_link: string, long_link: string) => {
 			long_link,
 		});
 
-		return query('short_link')(short_link);
+		return query("short_link")(short_link);
 	});
 };
